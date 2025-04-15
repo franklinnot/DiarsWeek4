@@ -1,5 +1,6 @@
 ﻿using DiarsWeek4.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace DiarsWeek4.Controllers
@@ -21,8 +22,19 @@ namespace DiarsWeek4.Controllers
             return View("List", productos);
         }
 
+        //Estados para las views
+        private void CargarEstados(string estadoSeleccionado = null)
+        {
+            ViewBag.Estados = new SelectList(new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Activo", Value = "1" },
+                new SelectListItem { Text = "Inactivo", Value = "0" }
+            }, "Value", "Text", estadoSeleccionado);
+        }
+
+
         #region Editar
-        
+
         // GET: Producto/Edit/<id>
         public async Task<IActionResult> Edit(int? id)
         {
@@ -33,6 +45,7 @@ namespace DiarsWeek4.Controllers
             if (producto == null)
                 return NotFound();
 
+            CargarEstados(producto.Estado);
             return View(producto);
         }
 
@@ -50,6 +63,7 @@ namespace DiarsWeek4.Controllers
                 {
                     _context.Update(producto);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -58,8 +72,10 @@ namespace DiarsWeek4.Controllers
                     else
                         throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
+
+            CargarEstados(producto.Estado);
+
             return View(producto);
         }
 
@@ -70,6 +86,7 @@ namespace DiarsWeek4.Controllers
         // GET: Producto/Create
         public IActionResult Create()
         {
+            CargarEstados();
             return View();
         }
 
@@ -84,7 +101,9 @@ namespace DiarsWeek4.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            CargarEstados(producto.Estado);
             return View(producto);
+            
         }
         
         #endregion

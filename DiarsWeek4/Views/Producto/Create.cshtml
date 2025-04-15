@@ -25,8 +25,7 @@
     </div>
     <div class="form-group">
         <label asp-for="Estado" class="control-label"></label>
-        <input asp-for="Estado" class="form-control" />
-        <span asp-validation-for="Estado" class="text-danger"></span>
+        <select asp-for="Estado" class="form-control" asp-items="ViewBag.Estados"></select>
     </div>
     <button type="submit" class="btn btn-success">Guardar</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
