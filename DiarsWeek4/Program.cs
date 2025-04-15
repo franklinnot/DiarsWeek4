@@ -1,4 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using DiarsWeek4.Models;
+
+
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Agregar AppDbContext con la cadena de conexión
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -22,6 +31,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Producto}/{action=Index}/{id?}");
 
 app.Run();
