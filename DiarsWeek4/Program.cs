@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using DiarsWeek4.Models;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Agregar AppDbContext con la cadena de conexión

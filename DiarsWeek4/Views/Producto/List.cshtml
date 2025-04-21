@@ -1,6 +1,10 @@
 ﻿@model IEnumerable<DiarsWeek4.Models.Producto>
 
-<h2>Listado de Productos</h2>
+@{
+    ViewData["Title"] = "Listado de Productos";
+}
+
+<h2 class="mt-4">@ViewData["Title"]</h2>
 
 @if (Model != null && Model.Any())
 {
@@ -25,7 +29,22 @@
                     <td>@item.Precio</td>
                     <td>@(item.Estado == "1" ? "Activo" : "Inactivo")</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Editar</a>
+                        <!-- Botón Editar -->
+                        <a asp-action="CreateEdit" asp-route-id="@item.Id"
+                           class="btn btn-secondary rounded-circle me-2 d-inline-flex justify-content-center align-items-center"
+                           style="width: 45px; height: 45px;" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+
+                        <!-- Botón Eliminar -->
+                        <button type="button" class="btn btn-danger rounded-circle d-inline-flex justify-content-center align-items-center"
+                                style="width: 45px; height: 45px;"
+                                data-bs-toggle="modal" data-bs-target="#deleteModal-@item.Id" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </button>
+
+                        @await Html.PartialAsync("_DeleteModal", item)
+
                     </td>
                 </tr>
             }
@@ -34,10 +53,12 @@
 }
 else
 {
-    <div class="alert alert-info">
+    <div class="alert alert-success">
         No hay productos registrados.
     </div>
 }
 <p class="text-end"> 
-    <a asp-controller="Producto" asp-action="Create" class="btn btn-primary">Registrar</a>
+    <a asp-controller="Producto" asp-action="CreateEdit" class="btn btn-outline-success">
+		<i class="bi bi-plus"></i> Nuevo Producto
+	</a>
 </p>
