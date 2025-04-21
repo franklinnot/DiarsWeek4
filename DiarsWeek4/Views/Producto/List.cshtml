@@ -27,7 +27,16 @@
                     <td>@item.Nombre</td>
                     <td>@item.Stock</td>
                     <td>@item.Precio</td>
-                    <td>@(item.Estado == "1" ? "Activo" : "Inactivo")</td>
+                    <td>
+                        @if (item.Estado == "1")
+                        {
+                            <span class="badge bg-success text-white">Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary text-white">Inactivo</span>
+                        }
+                    </td>
                     <td>
                         <!-- Botón Editar -->
                         <a asp-action="CreateEdit" asp-route-id="@item.Id"
@@ -59,6 +68,7 @@ else
 }
 <p class="text-end"> 
     <a asp-controller="Producto" asp-action="CreateEdit" class="btn btn-outline-success">
-		<i class="bi bi-plus"></i> Nuevo Producto
+        <i class="bi bi-plus-lg"></i>
+        <strong>Nuevo Producto</strong>
 	</a>
 </p>
