@@ -1,4 +1,5 @@
 ﻿using DiarsWeek4.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -33,85 +34,74 @@ namespace DiarsWeek4.Controllers
         }
 
 
-        #region Editar
+        #region Crear o Editar
 
-        // GET: Producto/Edit/<id>
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Producto/CreateEdit/<id> (unificado para Crear y Editar)
+        // Mostrar el formulario
+        public async Task<IActionResult> CreateEdit(int? id)
         {
-            if (id == null)
-                return NotFound();
+            Producto producto = new Producto();
 
-            var producto = await _context.Productos.FindAsync(id);
-            if (producto == null)
-                return NotFound();
+            if(id.HasValue) // Si existe el id, editamos
+            {
+                producto = await _context.Productos.FindAsync(id);
+                if (producto == null)
+                    return NotFound();
+            }
 
             CargarEstados(producto.Estado);
             return View(producto);
         }
 
-        // POST: Producto/Edit/<id>
+        // POST: Producto/CreateEdit/<id>
+        // Procesar el formulario - Crear o editar
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Sku,Nombre,Stock,Precio,Estado")] Producto producto)
+        public async Task<IActionResult> CreateEdit(int? id, [Bind("Id,Sku,Nombre,Stock,Precio,Estado")] Producto producto)
         {
-            if (id != producto.Id)
+            if (id.HasValue && id != producto.Id)
                 return NotFound();
 
             if (ModelState.IsValid)
             {
-                try
+                if (producto.Id == 0) // Si el id es 0 es nuevo producto
+                {
+                    _context.Add(producto);
+                }
+                else
                 {
                     _context.Update(producto);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductoExists(producto.Id))
-                        return NotFound();
-                    else
-                        throw;
-                }
-            }
-
-            CargarEstados(producto.Estado);
-
-            return View(producto);
-        }
-
-        #endregion
-
-        #region Registrar
-        
-        // GET: Producto/Create
-        public IActionResult Create()
-        {
-            CargarEstados();
-            return View();
-        }
-
-        // POST: Producto/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Sku,Nombre,Stock,Precio,Estado")] Producto producto)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(producto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+                    
             }
+
             CargarEstados(producto.Estado);
             return View(producto);
-            
         }
-        
         #endregion
 
-        private bool ProductoExists(int id)
+        
+        #region Eliminar
+
+        // Eliminar producto por id
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
         {
-            return _context.Productos.Any(e => e.Id == id);
+            var producto = await _context.Productos.FindAsync(id);
+            if (producto != null)
+            {
+                _context.Productos.Remove(producto);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
+
+        #endregion
 
     }
 }
